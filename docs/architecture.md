@@ -12,9 +12,10 @@ This document outlines the planned architecture for the real-time voice chat app
 ## Components
 
 1. **UI Layer**
-   - A ReactJS application using web autio and multimedia APIs.
+   - A ReactJS application using web audio and multimedia APIs.
    - Displays conversation history and agent state
    - Streams microphone audio to the STT engine
+   - Microphone capture is toggled on/off via a button (no push-to-talk)
    - Receives updates from the agent to modify the UI in real time
 
 2. **Audio Pipeline**
