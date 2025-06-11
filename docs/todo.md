@@ -22,3 +22,5 @@ A list of initial tasks to move the project forward.
 1. Integrate the Vosk backend for real-time transcription.
 1. Add README files for the source modules.
 1. Implemented a microphone toggle in the React UI to start/stop audio capture.
+1. Added console logging for microphone events in the React UI.
+1. Created backend scaffolding with an event loop and CLI runner script.

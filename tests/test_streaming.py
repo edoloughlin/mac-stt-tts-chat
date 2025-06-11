@@ -6,12 +6,12 @@ from unittest import mock
 # Allow importing the src package
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
-from src.stt import VoskStream, Transcript
+from src.backend.stt import VoskStream, Transcript
 
 
 def test_vosk_stream_yields_partial_and_final():
     # Mock vosk classes
-    with mock.patch("src.stt.streaming.vosk") as m_vosk:
+    with mock.patch("src.backend.stt.streaming.vosk") as m_vosk:
         m_vosk.Model.return_value = mock.Mock()
         rec_instance = mock.Mock()
         m_vosk.KaldiRecognizer.return_value = rec_instance
@@ -35,7 +35,4 @@ def test_vosk_stream_yields_partial_and_final():
             assert final == Transcript(text="hello", is_final=True)
 
         asyncio.run(run_test())
-
-
-
 
