@@ -12,6 +12,7 @@ This project aims to provide a foundation for building a fully on-device AI voic
 - **Text-to-Speech (TTS):** Natural-sounding voice synthesis, including streaming playback
 - **Voice Chat Loop:** Real-time, conversational back-and-forth between user and agent
 - **Optimized for Apple Silicon:** Utilizes Metal, Core ML, and Neural Engine
+- **React UI:** Includes a microphone toggle button to start or stop capturing audio
 
 ---
 
@@ -129,6 +130,8 @@ npm run dev
 ```
 
 Open your browser to `http://localhost:5173` to view the app.
+
+Click the microphone button to toggle audio capture on or off.
 
 ---
 
