@@ -12,6 +12,8 @@ This project aims to provide a foundation for building a fully on-device AI voic
 - **Text-to-Speech (TTS):** Natural-sounding voice synthesis, including streaming playback
 - **Voice Chat Loop:** Real-time, conversational back-and-forth between user and agent
 - **Optimized for Apple Silicon:** Utilizes Metal, Core ML, and Neural Engine
+- **Built-in streaming STT:** Real-time microphone transcription powered by Vosk
+  with partial and final results.
 
 ---
 
@@ -129,6 +131,28 @@ npm run dev
 ```
 
 Open your browser to `http://localhost:5173` to view the app.
+
+---
+
+## Using the STT Streamer
+
+The backend now includes a small helper class, `VoskStream`, which accepts raw
+PCM audio streamed from the web UI and yields transcription results as they are
+produced. Install `vosk` then run:
+
+```python
+from src.stt import VoskStream
+
+stream = VoskStream("/path/to/vosk-model")
+
+# when new 16 kHz mono PCM bytes arrive from the UI
+stream.feed_audio(audio_bytes)
+
+async for t in stream.stream():
+    print(t.text, t.is_final)
+```
+
+This will print partial and final transcripts from the streamed audio.
 
 ---
 

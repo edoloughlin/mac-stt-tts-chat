@@ -12,15 +12,16 @@ This document outlines the planned architecture for the real-time voice chat app
 ## Components
 
 1. **UI Layer**
-   - A ReactJS application using web autio and multimedia APIs.
+   - A ReactJS application using web audio and multimedia APIs.
    - Displays conversation history and agent state
-   - Streams microphone audio to the STT engine
+   - Captures microphone audio and streams it to the backend STT engine
    - Receives updates from the agent to modify the UI in real time
 
 2. **Audio Pipeline**
-   - Microphone input is fed to the STT engine which emits partial and final transcripts
+   - Audio from the UI is fed to the STT engine which emits partial and final transcripts
    - Final transcript triggers the agent
    - Agent response is converted to speech by the TTS engine and streamed back to the user
+   - Current implementation uses the Vosk backend for real-time STT streaming
 
 3. **Agent Interface**
    - Abstract interface that receives text and returns text plus optional actions
@@ -28,7 +29,7 @@ This document outlines the planned architecture for the real-time voice chat app
    - Designed so that more advanced agents can be plugged in without major changes
 
 4. **Interruption Detection**
-   - Voice activity detection (VAD) monitors microphone input
+   - Voice activity detection (VAD) monitors the incoming audio stream
    - When the user speaks while the agent is talking, TTS playback stops and the transcript resumes
 
 5. **Real-Time Loop**
