@@ -12,7 +12,7 @@ This document outlines the planned architecture for the real-time voice chat app
 ## Components
 
 1. **UI Layer**
-   - Built with a cross-platform toolkit (Electron, Tauri or SwiftUI)
+   - A ReactJS application using web autio and multimedia APIs.
    - Displays conversation history and agent state
    - Streams microphone audio to the STT engine
    - Receives updates from the agent to modify the UI in real time
