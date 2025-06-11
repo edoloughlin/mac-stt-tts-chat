@@ -4,8 +4,8 @@ A list of initial tasks to move the project forward.
 
 ## Pending
 
-1. Implement microphone capture and streaming to the STT engine.
-1. Integrate a streaming STT backend (e.g. whisper.cpp or mlx-whisper).
+1. ~~Implement microphone capture and streaming to the STT engine.~~
+1. ~~Integrate a streaming STT backend (e.g. whisper.cpp or mlx-whisper).~~
 1. Build a simple LLM chat agent that conforms to the agent interface.
 1. Implement a TTS backend capable of streaming audio playback.
 1. Create the asynchronous event loop connecting STT, Agent and TTS modules.
@@ -18,5 +18,7 @@ A list of initial tasks to move the project forward.
 
 1. Select the UI framework: The UI will be web based and will use ReactJS.
 1. Create a basic UI layout.
+1. Implement streaming STT using Vosk that accepts audio from the UI.
+1. Integrate the Vosk backend for real-time transcription.
 1. Add README files for the source modules.
 1. Implemented a microphone toggle in the React UI to start/stop audio capture.
