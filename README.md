@@ -125,3 +125,11 @@ Apple Silicon (especially the Neural Engine) enables fast, private voice agents 
 ---
 
 *This README summarizes technical guidance from a ChatGPT session on building local AI voice agents for macOS*
+
+## Planning Documents
+
+For an overview of the proposed architecture and development tasks, see the [docs](docs/) directory:
+
+- [docs/architecture.md](docs/architecture.md) &ndash; component breakdown and real-time audio pipeline
+- [docs/todo.md](docs/todo.md) &ndash; list of upcoming work items
+
