@@ -43,8 +43,9 @@ This document outlines the planned architecture for the real-time voice chat app
 docs/              - documentation
 src/
   ui/              - UI components
-  stt/             - speech-to-text utilities
-  tts/             - text-to-speech utilities
-  agent/           - pluggable agent implementations
-  core/            - event loop and common utilities
+  backend/         - Backend
+    stt/           - speech-to-text utilities
+    tts/           - text-to-speech utilities
+    agent/         - pluggable agent implementations
+    core/          - event loop and common utilities
 ```
