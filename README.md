@@ -15,6 +15,7 @@ This project aims to provide a foundation for building a fully on-device AI voic
 - **Built-in streaming STT:** Real-time microphone transcription powered by Vosk
   with partial and final results.
 - **React UI:** Includes a microphone toggle button to start or stop capturing audio
+- **WebSocket server:** Streams audio from the UI directly to the STT backend
 
 ---
 
@@ -186,19 +187,13 @@ python -m src.backend.core.runner vosk-model --turns 1
 The script processes microphone audio via `VoskStream` and prints the agent reply
 to stdout.
 
----
+### Running the WebSocket server
 
-## Running the Backend
-
-A small runner script wires the pieces together using an echo agent and a console
-TTS implementation:
+To stream audio from the React UI, start the WebSocket server:
 
 ```bash
-python -m src.backend.core.runner /path/to/vosk-model --turns 1
+python -m src.backend.core.websocket_server vosk-model
 ```
-
-The script processes microphone audio via `VoskStream` and prints the agent reply
-to stdout.
 
 ---
 ## Final Thoughts
