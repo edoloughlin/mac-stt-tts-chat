@@ -18,3 +18,4 @@ A list of initial tasks to move the project forward.
 
 1. Select the UI framework: The UI will be web based and will use ReactJS.
 1. Create a basic UI layout.
+1. Add README files for the source modules.
