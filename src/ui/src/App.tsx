@@ -16,10 +16,12 @@ export default function App() {
         audioChunksRef.current = [];
         mediaRecorder.ondataavailable = (e: BlobEvent) => {
           if (e.data.size > 0) {
+            console.log('Captured chunk', e.data.size, 'bytes');
             audioChunksRef.current.push(e.data);
           }
         };
         mediaRecorder.start();
+        console.log('Microphone capture started');
         setListening(true);
       } catch (err) {
         console.error('Failed to access microphone', err);
@@ -31,6 +33,7 @@ export default function App() {
         recorder.stream.getTracks().forEach((t) => t.stop());
         mediaRecorderRef.current = null;
       }
+      console.log('Microphone capture stopped');
       setListening(false);
 
       const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
