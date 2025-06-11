@@ -36,6 +36,7 @@ This document outlines the planned architecture for the real-time voice chat app
 5. **Real-Time Loop**
    - Asynchronous event loop connecting STT, Agent and TTS via queues
    - Allows overlapping operations for minimal latency
+   - Implemented by `ChatBackend` in `src/backend/core/backend.py`
 
 ## Proposed Directory Structure
 
@@ -49,3 +50,6 @@ src/
     agent/         - pluggable agent implementations
     core/          - event loop and common utilities
 ```
+
+A simple CLI runner located at `src/backend/core/runner.py` wires the default
+components together for testing.
