@@ -6,18 +6,35 @@ export default function App() {
   const [listening, setListening] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const wsRef = useRef<WebSocket | null>(null);
 
   const toggleMic = async () => {
     if (!listening) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const ws = new WebSocket('ws://localhost:8000');
+        wsRef.current = ws;
+
         const mediaRecorder = new MediaRecorder(stream);
         mediaRecorderRef.current = mediaRecorder;
         audioChunksRef.current = [];
-        mediaRecorder.ondataavailable = (e: BlobEvent) => {
+        mediaRecorder.ondataavailable = async (e: BlobEvent) => {
           if (e.data.size > 0) {
             console.log('Captured chunk', e.data.size, 'bytes');
             audioChunksRef.current.push(e.data);
+            if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+              wsRef.current.send(await e.data.arrayBuffer());
+            }
+          }
+        };
+        ws.onmessage = (ev: MessageEvent) => {
+          try {
+            const t = JSON.parse(ev.data);
+            if (t.final) {
+              setMessages((m) => [...m, t.text]);
+            }
+          } catch (err) {
+            console.error('Failed to parse message', err);
           }
         };
         mediaRecorder.start();
@@ -33,11 +50,15 @@ export default function App() {
         recorder.stream.getTracks().forEach((t) => t.stop());
         mediaRecorderRef.current = null;
       }
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
       console.log('Microphone capture stopped');
       setListening(false);
 
       const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-      console.log('Recorded audio length (ms):', blob.size); // placeholder for future streaming
+      console.log('Recorded audio length (ms):', blob.size);
     }
   };
 

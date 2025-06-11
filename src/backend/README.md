@@ -35,6 +35,14 @@ python -m src.backend.core.runner vosk-model --turns 1
 
 Each final transcript will be echoed back to you as text output. The `--turns` argument limits the number of transcripts processed (use `-1` for no limit).
 
+### WebSocket server
+
+The React UI streams audio over a WebSocket connection. Start the server like so:
+
+```bash
+python -m src.backend.core.websocket_server vosk-model
+```
+
 ## Testing
 
 Activate your virtual environment and install the development requirements, then run:
