@@ -20,3 +20,5 @@ A list of initial tasks to move the project forward.
 1. Create a basic UI layout.
 1. Implement streaming STT using Vosk that accepts audio from the UI.
 1. Integrate the Vosk backend for real-time transcription.
+1. Add README files for the source modules.
+1. Implemented a microphone toggle in the React UI to start/stop audio capture.

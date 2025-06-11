@@ -15,6 +15,7 @@ This document outlines the planned architecture for the real-time voice chat app
    - A ReactJS application using web audio and multimedia APIs.
    - Displays conversation history and agent state
    - Captures microphone audio and streams it to the backend STT engine
+   - Microphone capture is toggled on/off via a button (no push-to-talk)
    - Receives updates from the agent to modify the UI in real time
 
 2. **Audio Pipeline**
