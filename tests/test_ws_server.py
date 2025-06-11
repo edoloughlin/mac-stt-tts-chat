@@ -6,6 +6,7 @@ from unittest import mock
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
+from src.backend.core import websocket_server
 from src.backend.core.websocket_server import AudioWebSocketServer
 from src.backend.stt import Transcript
 
@@ -65,3 +66,13 @@ def test_send_transcripts_sends_messages():
             json.dumps({"text": "hi", "final": False}),
             json.dumps({"text": "bye", "final": True}),
         ]
+
+
+def test_main_starts_server():
+    with mock.patch("src.backend.core.websocket_server.AudioWebSocketServer") as cls, \
+         mock.patch("asyncio.run") as run:
+        inst = cls.return_value
+        websocket_server.main(["model", "--host", "0.0.0.0", "--port", "1234"])
+
+        cls.assert_called_with("model", host="0.0.0.0", port=1234)
+        run.assert_called_once_with(inst.run())

@@ -189,7 +189,9 @@ to stdout.
 
 ### Running the WebSocket server
 
-To stream audio from the React UI, start the WebSocket server:
+To stream audio from the React UI, start the WebSocket server. It prints the
+address it is listening on and runs until interrupted. Use `--host` and
+`--port` to change the bind address:
 
 ```bash
 python -m src.backend.core.websocket_server vosk-model
