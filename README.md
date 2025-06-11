@@ -1,12 +1,8 @@
-Certainly! Here’s a complete README.md for your repo, summarizing the advice and recommendations from your ChatGPT session. This is designed to help developers quickly understand your project’s purpose, setup, and best practices for building a local AI voice agent on Apple Silicon Macs.
-
----
-
 # mac-stt-tts-chat
 
 **Local AI Voice Agent for macOS (Apple Silicon)**
 
-This project aims to provide a foundation for building a fully on-device AI voice agent for macOS, leveraging state-of-the-art open-source Speech-to-Text (STT) and Text-to-Speech (TTS) engines. All models and components run locally for privacy, low latency, and offline use—no cloud required.
+This project aims to provide a foundation for building a fully on-device AI voice agent for macOS, leveraging open-source Speech-to-Text (STT) and Text-to-Speech (TTS) engines. All models and components run locally.
 
 ---
 
