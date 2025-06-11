@@ -144,7 +144,7 @@ PCM audio streamed from the web UI and yields transcription results as they are
 produced. Install `vosk` then run:
 
 ```python
-from src.stt import VoskStream
+from src.backend.stt import VoskStream
 
 stream = VoskStream("/path/to/vosk-model")
 
@@ -156,6 +156,19 @@ async for t in stream.stream():
 ```
 
 This will print partial and final transcripts from the streamed audio.
+
+---
+## Running the Backend
+
+A small runner script wires the pieces together using an echo agent and a console
+TTS implementation:
+
+```bash
+python -m src.backend.core.runner /path/to/vosk-model --turns 1
+```
+
+The script processes microphone audio via `VoskStream` and prints the agent reply
+to stdout.
 
 ---
 
