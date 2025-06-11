@@ -160,6 +160,14 @@ This will print partial and final transcripts from the streamed audio.
 ---
 ## Running the Backend
 
+Create a virtual environment and install the Python dependencies first:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
 A small runner script wires the pieces together using an echo agent and a console
 TTS implementation:
 
