@@ -141,12 +141,13 @@ Click the microphone button to toggle audio capture on or off.
 
 The backend now includes a small helper class, `VoskStream`, which accepts raw
 PCM audio streamed from the web UI and yields transcription results as they are
-produced. Install `vosk` then run:
+produced. Install `vosk` and download a model, then run:
 
 ```python
 from src.backend.stt import VoskStream
 
-stream = VoskStream("/path/to/vosk-model")
+stream = VoskStream("/path/to/vosk-model")  # path to the unzipped model folder
+# Download models from https://alphacephei.com/vosk/models
 
 # when new 16 kHz mono PCM bytes arrive from the UI
 stream.feed_audio(audio_bytes)
@@ -156,6 +157,34 @@ async for t in stream.stream():
 ```
 
 This will print partial and final transcripts from the streamed audio.
+
+---
+## Running the Backend
+
+Create a virtual environment and install the Python dependencies first:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Next download a Vosk model (50MB) and extract it somewhere on disk:
+
+```bash
+curl -L -o model.zip https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip
+unzip model.zip && mv vosk-model-small-en-us-0.15 vosk-model
+```
+
+A small runner script wires the pieces together using an echo agent and a console
+TTS implementation:
+
+```bash
+python -m src.backend.core.runner vosk-model --turns 1
+```
+
+The script processes microphone audio via `VoskStream` and prints the agent reply
+to stdout.
 
 ---
 
