@@ -4,7 +4,6 @@ A list of initial tasks to move the project forward.
 
 ## Pending
 
-1. Create a basic UI layout.
 1. Implement microphone capture and streaming to the STT engine.
 1. Integrate a streaming STT backend (e.g. whisper.cpp or mlx-whisper).
 1. Build a simple LLM chat agent that conforms to the agent interface.
@@ -18,3 +17,4 @@ A list of initial tasks to move the project forward.
 # Done
 
 1. Select the UI framework: The UI will be web based and will use ReactJS.
+1. Create a basic UI layout.

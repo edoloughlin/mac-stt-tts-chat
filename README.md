@@ -118,6 +118,20 @@ All recommended models are open-weight (MIT, Apache-2.0, AGPL). Double-check lic
 
 ---
 
+## Running the Web UI
+
+The React based frontend lives in `src/ui` and uses Vite for development.
+
+```bash
+cd src/ui
+npm install
+npm run dev
+```
+
+Open your browser to `http://localhost:5173` to view the app.
+
+---
+
 ## Final Thoughts
 
 Apple Silicon (especially the Neural Engine) enables fast, private voice agents without a discrete GPU. Start with **mlx-whisper + Piper** for simplicity, then upgrade as needed!
