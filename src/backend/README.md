@@ -37,7 +37,9 @@ Each final transcript will be echoed back to you as text output. The `--turns` a
 
 ### WebSocket server
 
-The React UI streams audio over a WebSocket connection. Start the server like so:
+The React UI streams audio over a WebSocket connection. Start the server and it
+will print the address it's listening on. Use `--host` and `--port` to change the
+default of `localhost:8000`:
 
 ```bash
 python -m src.backend.core.websocket_server vosk-model

@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import json
-from typing import Any
+from typing import Any, Iterable, Optional
 
 try:
     import websockets  # type: ignore
@@ -42,3 +42,31 @@ class AudioWebSocketServer:
     async def run(self) -> None:
         async with websockets.serve(self._handler, self.host, self.port):
             await asyncio.Future()  # run forever
+
+
+def main(argv: Optional[Iterable[str]] = None) -> None:
+    """CLI entry point to start the WebSocket server."""
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(description="Run the audio WebSocket server")
+    parser.add_argument("model", help="Path to Vosk model")
+    parser.add_argument("--host", default="localhost", help="Host to bind")
+    parser.add_argument("--port", type=int, default=8000, help="Port to bind")
+    args = parser.parse_args(list(argv) if argv is not None else None)
+
+    try:
+        server = AudioWebSocketServer(args.model, host=args.host, port=args.port)
+    except RuntimeError as exc:  # Missing optional dependency
+        print(f"Error: {exc}", file=sys.stderr)
+        return
+
+    print(f"Listening on ws://{args.host}:{args.port}")
+    try:
+        asyncio.run(server.run())
+    except KeyboardInterrupt:
+        print("Server stopped by user")
+
+
+if __name__ == "__main__":  # pragma: no cover - entry point
+    main()
