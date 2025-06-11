@@ -24,3 +24,4 @@ A list of initial tasks to move the project forward.
 1. Implemented a microphone toggle in the React UI to start/stop audio capture.
 1. Created backend scaffolding with an event loop and CLI runner script.
 1. Added dependency management with `requirements.txt` and backend setup instructions.
+1. Documented how to download and use a Vosk model for the backend.
