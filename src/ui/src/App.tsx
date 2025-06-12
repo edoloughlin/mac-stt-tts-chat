@@ -54,7 +54,8 @@ export default function App() {
             console.error('Failed to parse message', err);
           }
         };
-        mediaRecorder.start();
+        // Pass a timeslice so dataavailable fires periodically
+        mediaRecorder.start(250);
         console.log('Microphone capture started');
         setListening(true);
       } catch (err) {
