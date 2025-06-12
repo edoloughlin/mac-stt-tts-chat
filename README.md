@@ -9,7 +9,8 @@ This project aims to provide a foundation for building a fully on-device AI voic
 ## Features
 
 - **Speech-to-Text (STT):** High-accuracy, low-latency transcription using local models
-- **Text-to-Speech (TTS):** Backend-generated audio is streamed to the UI for playback
+- **Text-to-Speech (TTS):** Speech is generated with the macOS `say` command (if available)
+  and streamed to the UI for playback
 - **Voice Chat Loop:** Real-time, conversational back-and-forth between user and agent
 - **Optimized for Apple Silicon:** Utilizes Metal, Core ML, and Neural Engine
 - **Built-in streaming STT:** Real-time microphone transcription powered by Vosk
@@ -197,15 +198,18 @@ to stdout.
 
 To stream audio from the React UI, start the WebSocket server. It prints the
 address it is listening on and runs until interrupted. Use `--host` and
-`--port` to change the bind address. Final transcripts are written to
-`transcript.log` by default. Use `--transcript-log` to change the file path:
+`--port` to change the bind address. Conversation transcripts are written to
+`transcript.log` by default. Use `--transcript-log` to change the file path.
+Each line in the log is timestamped with millisecond precision and prefixed with
+`<` or `>` to indicate STT input or TTS output:
 
 ```bash
 python -m src.backend.core.websocket_server vosk-model
 ```
 
-The server now also feeds final transcripts to the built-in echo agent and
-`ConsoleTTS`. The echoed response is printed and sent back over the WebSocket.
+The server now also feeds final transcripts to the built-in echo agent. Speech
+is produced using `say` on macOS (falling back to a short beep if unavailable),
+streamed back over the WebSocket and recorded in `transcript.log`.
 
 ---
 ## Final Thoughts
