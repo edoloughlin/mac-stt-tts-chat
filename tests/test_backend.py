@@ -21,8 +21,9 @@ class DummyTTS(TTS):
     def __init__(self) -> None:
         self.spoken = []
 
-    async def speak(self, text: str) -> None:
+    async def speak(self, text: str) -> bytes:
         self.spoken.append(text)
+        return b"audio"
 
 
 def test_backend_processes_final_transcripts():

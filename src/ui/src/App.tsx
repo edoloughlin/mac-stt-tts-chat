@@ -1,8 +1,13 @@
 import React, { useState, useRef } from 'react';
 import './app.css';
 
+type Message = {
+  speaker: 'user' | 'agent';
+  text: string;
+};
+
 export default function App() {
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [listening, setListening] = useState(false);
   const [bytesSent, setBytesSent] = useState(0);
   const [bytesReceived, setBytesReceived] = useState(0);
@@ -39,21 +44,26 @@ export default function App() {
         source.connect(node).connect(gain).connect(ctx.destination);
         ws.onmessage = async (ev: MessageEvent) => {
           if (typeof ev.data !== 'string') {
-            let size = 0;
-            if (ev.data instanceof Blob) {
-              size = ev.data.size;
-            } else if (ev.data instanceof ArrayBuffer) {
-              size = ev.data.byteLength;
-            }
-            if (size > 0) {
-              setBytesReceived((b) => b + size);
+            const buf =
+              ev.data instanceof Blob ? await ev.data.arrayBuffer() : ev.data;
+            setBytesReceived((b) => b + buf.byteLength);
+            if (audioCtxRef.current) {
+              const audioBuf = await audioCtxRef.current.decodeAudioData(buf);
+              const source = audioCtxRef.current.createBufferSource();
+              source.buffer = audioBuf;
+              source.connect(audioCtxRef.current.destination);
+              source.start();
             }
             return;
           }
           try {
             const t = JSON.parse(ev.data);
             if (t.final) {
-              setMessages((m) => [...m, t.text]);
+              if (t.agent) {
+                setMessages((m) => [...m, { speaker: 'agent', text: t.text }]);
+              } else {
+                setMessages((m) => [...m, { speaker: 'user', text: t.text }]);
+              }
             }
           } catch (err) {
             console.error('Failed to parse message', err);
@@ -93,7 +103,7 @@ export default function App() {
       <h1>mac-stt-tts-chat</h1>
       <div className="conversation">
         {messages.map((m, i) => (
-          <div key={i} className="message">{m}</div>
+          <div key={i} className={`message ${m.speaker}`}>{m.text}</div>
         ))}
       </div>
       {listening && (

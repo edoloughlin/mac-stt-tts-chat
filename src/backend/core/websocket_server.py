@@ -67,7 +67,9 @@ class AudioWebSocketServer:
                 self._log_file.flush()
             if t.is_final and t.text:
                 reply = await self.agent.process(t.text)
-                await self.tts.speak(reply)
+                audio = await self.tts.speak(reply)
+                if audio:
+                    await websocket.send(audio)
                 reply_payload = json.dumps({"text": reply, "final": True, "agent": True})
                 await websocket.send(reply_payload)
 

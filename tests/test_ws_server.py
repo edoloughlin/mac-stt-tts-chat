@@ -39,8 +39,9 @@ class DummyTTS:
     def __init__(self) -> None:
         self.spoken = []
 
-    async def speak(self, text: str) -> None:
+    async def speak(self, text: str) -> bytes:
         self.spoken.append(text)
+        return b"audio"
 
 
 def test_handler_feeds_audio():
@@ -88,6 +89,7 @@ def test_send_transcripts_sends_messages():
         assert dummy_ws.sent == [
             json.dumps({"text": "hi", "final": False}),
             json.dumps({"text": "bye", "final": True}),
+            b"audio",
             json.dumps({"text": "BYE", "final": True, "agent": True}),
         ]
         assert server.tts.spoken == ["BYE"]
@@ -113,6 +115,7 @@ def test_send_transcripts_logs_transcripts(tmp_path):
         asyncio.run(server._send_transcripts(dummy_ws))
 
         assert log_file.read_text() == "hello\n"
+        assert dummy_ws.sent[1] == b"audio"
         assert server.tts.spoken == ["HELLO"]
 
 
