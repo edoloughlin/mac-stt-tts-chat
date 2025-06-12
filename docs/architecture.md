@@ -28,7 +28,7 @@ This document outlines the planned architecture for the real-time voice chat app
   - The backend streams TTS audio to the UI which plays it via the Web Audio API
   - Current implementation uses the Vosk backend for real-time STT streaming
   - The WebSocket server echoes final transcripts via an `EchoAgent` and
-    `MacSayTTS` (falls back to `ConsoleTTS` if `say` is unavailable)
+    `OrpheusStyleTTS` (falls back to `MacSayTTS` or `ConsoleTTS` if unavailable)
 
 3. **Agent Interface**
    - Abstract interface that receives text and returns text plus optional actions

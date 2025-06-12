@@ -37,3 +37,4 @@ A list of initial tasks to move the project forward.
 1. Switched to backend TTS streaming audio to the UI for playback.
 1. Added timestamped transcript logging for STT and TTS without console output.
 1. Implemented a macOS `say` TTS backend for streaming speech audio.
+1. Added Orpheus 3B / StyleTTS 2 backend for high-quality speech synthesis.

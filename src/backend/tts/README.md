@@ -1,5 +1,7 @@
 # Text-to-Speech (TTS)
 
-This module will contain wrappers for TTS engines capable of streaming audio playback.
+Wrappers for TTS engines capable of streaming audio playback.
 
-Suggested engines include Piper and Kokoro. Refer to the root README for more details.
+The preferred backend is **Orpheus 3B / StyleTTS 2** for natural-sounding speech.
+Fallback engines include Piper, Kokoro and the macOS `say` command. Refer to the
+root README for installation details.

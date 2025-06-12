@@ -9,8 +9,9 @@ This project aims to provide a foundation for building a fully on-device AI voic
 ## Features
 
 - **Speech-to-Text (STT):** High-accuracy, low-latency transcription using local models
-- **Text-to-Speech (TTS):** Speech is generated with the macOS `say` command (if available)
-  and streamed to the UI for playback
+- **Text-to-Speech (TTS):** Speech is generated with **Orpheus 3B / StyleTTS 2**
+  (falling back to the macOS `say` command if unavailable) and streamed to the UI
+  for playback
 - **Voice Chat Loop:** Real-time, conversational back-and-forth between user and agent
 - **Optimized for Apple Silicon:** Utilizes Metal, Core ML, and Neural Engine
 - **Built-in streaming STT:** Real-time microphone transcription powered by Vosk
@@ -45,8 +46,7 @@ This project aims to provide a foundation for building a fully on-device AI voic
 | ---------------- | -------------------------------------------------- | ------------------------------------------ |
 | **Piper (MIT)**  | `brew install portaudio`<br>`git clone https://github.com/rhasspy/piper && make` | Fast, many voices, 24kHz, <1GB             |
 | **Kokoro-82 M**  | `pip install kokoro`                               | Very fast, 82M params, natural sound       |
-| **Orpheus-TTS**  | `pip install orpheus-speech`                       | 150M-3B params, zero-shot cloning, fp8     |
-| **StyleTTS 2**   | `git clone https://github.com/yl4579/StyleTTS2`    | Diffusion-based, near-human quality        |
+| **Orpheus 3B / StyleTTS 2** | `pip install orpheus-speech`<br>`git lfs clone https://huggingface.co/orpheus-speech/orpheus-3b-styletts2` | Diffusion-based, near-human quality |
 | **Mimic 3**      | `pip install mimic3-tts`                           | <1GB RAM, privacy-first, multi-language    |
 | **AVSpeechSynthesizer** | Native API                                  | Built-in voices, offline once downloaded   |
 
@@ -184,6 +184,19 @@ curl -L -o model.zip https://alphacephei.com/vosk/models/vosk-model-small-en-us-
 unzip model.zip && mv vosk-model-small-en-us-0.15 vosk-model
 ```
 
+### Installing Orpheus 3B / StyleTTS 2
+
+Install the TTS package and download the model weights:
+
+```bash
+pip install orpheus-speech
+git lfs install
+git lfs clone https://huggingface.co/orpheus-speech/orpheus-3b-styletts2
+```
+
+Set the `ORPHEUS_MODEL` environment variable to the path of the cloned
+repository so the backend can find it.
+
 A small runner script wires the pieces together using an echo agent and a console
 TTS implementation:
 
@@ -208,8 +221,9 @@ python -m src.backend.core.websocket_server vosk-model
 ```
 
 The server now also feeds final transcripts to the built-in echo agent. Speech
-is produced using `say` on macOS (falling back to a short beep if unavailable),
-streamed back over the WebSocket and recorded in `transcript.log`.
+is produced using **Orpheus 3B / StyleTTS 2** (falling back to `say` on macOS or
+a short beep if unavailable), streamed back over the WebSocket and recorded in
+`transcript.log`.
 
 ---
 ## Final Thoughts
