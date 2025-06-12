@@ -11,6 +11,10 @@ except ImportError:  # pragma: no cover - optional dependency
     websockets = None
 
 from ..stt import VoskStream, Transcript
+from ..agent.base import Agent
+from ..agent.simple import EchoAgent
+from ..tts.base import TTS
+from ..tts.simple import ConsoleTTS
 
 
 class AudioWebSocketServer:
@@ -22,6 +26,8 @@ class AudioWebSocketServer:
         host: str = "localhost",
         port: int = 8000,
         transcript_log: Optional[str] = "transcript.log",
+        agent: Optional[Agent] = None,
+        tts: Optional[TTS] = None,
     ) -> None:
         if websockets is None:
             raise RuntimeError("websockets must be installed to run the server")
@@ -35,6 +41,8 @@ class AudioWebSocketServer:
         self._log_file: Optional[TextIO] = (
             open(transcript_log, "a", encoding="utf-8") if transcript_log else None
         )
+        self.agent = agent or EchoAgent()
+        self.tts = tts or ConsoleTTS()
 
     async def _log_bytes(self) -> None:
         """Periodically print the number of audio bytes sent/received."""
@@ -57,6 +65,11 @@ class AudioWebSocketServer:
             if self._log_file and t.is_final and t.text:
                 self._log_file.write(t.text + "\n")
                 self._log_file.flush()
+            if t.is_final and t.text:
+                reply = await self.agent.process(t.text)
+                await self.tts.speak(reply)
+                reply_payload = json.dumps({"text": reply, "final": True, "agent": True})
+                await websocket.send(reply_payload)
 
     async def _handler(self, websocket: Any) -> None:
         send_task = asyncio.create_task(self._send_transcripts(websocket))

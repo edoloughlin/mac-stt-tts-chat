@@ -25,6 +25,8 @@ This document outlines the planned architecture for the real-time voice chat app
    - Final transcript triggers the agent
    - Agent response is converted to speech by the TTS engine and streamed back to the user
    - Current implementation uses the Vosk backend for real-time STT streaming
+   - The WebSocket server echoes final transcripts via an `EchoAgent` and
+     `ConsoleTTS`
 
 3. **Agent Interface**
    - Abstract interface that receives text and returns text plus optional actions
