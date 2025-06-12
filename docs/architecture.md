@@ -21,6 +21,7 @@ This document outlines the planned architecture for the real-time voice chat app
 
 2. **Audio Pipeline**
    - Audio from the UI is fed to the STT engine which emits partial and final transcripts
+   - Final transcripts are appended to `transcript.log` for debugging
    - Final transcript triggers the agent
    - Agent response is converted to speech by the TTS engine and streamed back to the user
    - Current implementation uses the Vosk backend for real-time STT streaming

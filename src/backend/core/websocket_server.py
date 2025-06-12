@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import json
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Optional, TextIO
 
 try:
     import websockets  # type: ignore
@@ -16,7 +16,13 @@ from ..stt import VoskStream, Transcript
 class AudioWebSocketServer:
     """Serve a WebSocket endpoint that streams audio to STT."""
 
-    def __init__(self, model_path: str, host: str = "localhost", port: int = 8000) -> None:
+    def __init__(
+        self,
+        model_path: str,
+        host: str = "localhost",
+        port: int = 8000,
+        transcript_log: Optional[str] = "transcript.log",
+    ) -> None:
         if websockets is None:
             raise RuntimeError("websockets must be installed to run the server")
         self.host = host
@@ -24,19 +30,33 @@ class AudioWebSocketServer:
         self.stt = VoskStream(model_path)
         self.bytes_received = 0
         self.bytes_sent = 0
+        self._last_bytes_received = 0
+        self._last_bytes_sent = 0
+        self._log_file: Optional[TextIO] = (
+            open(transcript_log, "a", encoding="utf-8") if transcript_log else None
+        )
 
     async def _log_bytes(self) -> None:
         """Periodically print the number of audio bytes sent/received."""
         while True:
             await asyncio.sleep(10)
-            print(
-                f"Audio bytes received: {self.bytes_received}, sent: {self.bytes_sent}"
-            )
+            if (
+                self.bytes_received != self._last_bytes_received
+                or self.bytes_sent != self._last_bytes_sent
+            ):
+                print(
+                    f"Audio bytes received: {self.bytes_received}, sent: {self.bytes_sent}"
+                )
+                self._last_bytes_received = self.bytes_received
+                self._last_bytes_sent = self.bytes_sent
 
     async def _send_transcripts(self, websocket: Any) -> None:
         async for t in self.stt.stream():
             payload = json.dumps({"text": t.text, "final": t.is_final})
             await websocket.send(payload)
+            if self._log_file and t.is_final and t.text:
+                self._log_file.write(t.text + "\n")
+                self._log_file.flush()
 
     async def _handler(self, websocket: Any) -> None:
         send_task = asyncio.create_task(self._send_transcripts(websocket))
@@ -60,6 +80,8 @@ class AudioWebSocketServer:
             log_task.cancel()
             with contextlib.suppress(asyncio.CancelledError):
                 await log_task
+            if self._log_file:
+                self._log_file.close()
 
 
 def main(argv: Optional[Iterable[str]] = None) -> None:
@@ -71,10 +93,20 @@ def main(argv: Optional[Iterable[str]] = None) -> None:
     parser.add_argument("model", help="Path to Vosk model")
     parser.add_argument("--host", default="localhost", help="Host to bind")
     parser.add_argument("--port", type=int, default=8000, help="Port to bind")
+    parser.add_argument(
+        "--transcript-log",
+        default="transcript.log",
+        help="File to write final transcripts",
+    )
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     try:
-        server = AudioWebSocketServer(args.model, host=args.host, port=args.port)
+        server = AudioWebSocketServer(
+            args.model,
+            host=args.host,
+            port=args.port,
+            transcript_log=args.transcript_log,
+        )
     except RuntimeError as exc:  # Missing optional dependency
         print(f"Error: {exc}", file=sys.stderr)
         return
