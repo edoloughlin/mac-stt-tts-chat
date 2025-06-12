@@ -21,3 +21,5 @@ When undertaking a task, consider what changes will be needed in the test suite 
 Ensure that you update existing tests or create new tests to cover new or changed code.
 
 Remove redundant code when refactoring but take extra care to ensure that this will not break anything.
+
+Review project dependencies on every run. Update out of date Python requirements files and NPM package files or any other dependency management manifests.
