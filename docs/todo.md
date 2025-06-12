@@ -7,7 +7,6 @@ A list of initial tasks to move the project forward.
 1. ~~Implement microphone capture and streaming to the STT engine.~~
 1. ~~Integrate a streaming STT backend (e.g. whisper.cpp or mlx-whisper).~~
 1. Build a simple LLM chat agent that conforms to the agent interface.
-1. Implement a TTS backend capable of streaming audio playback.
 1. Create the asynchronous event loop connecting STT, Agent and TTS modules.
 1. Add interruption detection so user speech can cut off TTS playback.
 1. Define a plugin mechanism to swap out the agent with more advanced versions.
@@ -36,3 +35,5 @@ A list of initial tasks to move the project forward.
 1. Hooked up the WebSocket server to the echo agent and console TTS.
 1. Added browser speech synthesis and fixed duplicate transcripts in the UI.
 1. Switched to backend TTS streaming audio to the UI for playback.
+1. Added timestamped transcript logging for STT and TTS without console output.
+1. Implemented a macOS `say` TTS backend for streaming speech audio.

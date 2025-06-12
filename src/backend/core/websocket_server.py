@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import json
+import datetime
 from typing import Any, Iterable, Optional, TextIO
 
 try:
@@ -15,6 +16,7 @@ from ..agent.base import Agent
 from ..agent.simple import EchoAgent
 from ..tts.base import TTS
 from ..tts.simple import ConsoleTTS
+from ..tts.macsay import MacSayTTS
 
 
 class AudioWebSocketServer:
@@ -42,7 +44,19 @@ class AudioWebSocketServer:
             open(transcript_log, "a", encoding="utf-8") if transcript_log else None
         )
         self.agent = agent or EchoAgent()
-        self.tts = tts or ConsoleTTS()
+        self.tts = tts or self._default_tts()
+
+    def _default_tts(self) -> TTS:
+        """Return a TTS instance, preferring ``MacSayTTS`` if available."""
+        try:
+            return MacSayTTS()
+        except Exception:
+            return ConsoleTTS()
+
+    def _timestamp(self) -> str:
+        """Return the current timestamp with millisecond precision."""
+        now = datetime.datetime.now()
+        return now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
     async def _log_bytes(self) -> None:
         """Periodically print the number of audio bytes sent/received."""
@@ -63,13 +77,16 @@ class AudioWebSocketServer:
             payload = json.dumps({"text": t.text, "final": t.is_final})
             await websocket.send(payload)
             if self._log_file and t.is_final and t.text:
-                self._log_file.write(t.text + "\n")
+                self._log_file.write(f"{self._timestamp()} < {t.text}\n")
                 self._log_file.flush()
             if t.is_final and t.text:
                 reply = await self.agent.process(t.text)
                 audio = await self.tts.speak(reply)
                 if audio:
                     await websocket.send(audio)
+                if self._log_file:
+                    self._log_file.write(f"{self._timestamp()} > {reply}\n")
+                    self._log_file.flush()
                 reply_payload = json.dumps({"text": reply, "final": True, "agent": True})
                 await websocket.send(reply_payload)
 

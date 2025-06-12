@@ -60,7 +60,7 @@ def test_handler_feeds_audio():
         stt_instance = mock.Mock()
         m_vosk.return_value = stt_instance
 
-        server = AudioWebSocketServer("model", transcript_log=None)
+        server = AudioWebSocketServer("model", transcript_log=None, tts=DummyTTS())
         asyncio.run(server._handler(dummy_ws))
 
         assert stt_instance.feed_audio.call_count == 2
@@ -112,9 +112,13 @@ def test_send_transcripts_logs_transcripts(tmp_path):
         server = AudioWebSocketServer("model", transcript_log=str(log_file))
         server.agent = DummyAgent()
         server.tts = DummyTTS()
-        asyncio.run(server._send_transcripts(dummy_ws))
+        with mock.patch.object(server, "_timestamp", return_value="2021-01-01 00:00:00.000"):
+            asyncio.run(server._send_transcripts(dummy_ws))
 
-        assert log_file.read_text() == "hello\n"
+        assert log_file.read_text() == (
+            "2021-01-01 00:00:00.000 < hello\n"
+            "2021-01-01 00:00:00.000 > HELLO\n"
+        )
         assert dummy_ws.sent[1] == b"audio"
         assert server.tts.spoken == ["HELLO"]
 

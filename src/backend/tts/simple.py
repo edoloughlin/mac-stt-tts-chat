@@ -9,10 +9,9 @@ from .base import TTS
 
 
 class ConsoleTTS(TTS):
-    """TTS implementation that prints the text and returns a short beep."""
+    """TTS implementation that returns a short beep for any text."""
 
     async def speak(self, text: str) -> bytes:
-        print(text)
 
         sr = 16000
         duration = 0.3

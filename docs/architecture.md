@@ -20,14 +20,15 @@ This document outlines the planned architecture for the real-time voice chat app
    - Receives updates from the agent to modify the UI in real time
 
 2. **Audio Pipeline**
-   - Audio from the UI is fed to the STT engine which emits partial and final transcripts
-   - Final transcripts are appended to `transcript.log` for debugging
-   - Final transcript triggers the agent
+  - Audio from the UI is fed to the STT engine which emits partial and final transcripts
+  - Final transcripts and agent replies are appended to `transcript.log`
+    with millisecond timestamps and `<`/`>` prefixes
+  - A final transcript triggers the agent
   - Agent response is converted to speech by the TTS engine and streamed back to the user
   - The backend streams TTS audio to the UI which plays it via the Web Audio API
   - Current implementation uses the Vosk backend for real-time STT streaming
   - The WebSocket server echoes final transcripts via an `EchoAgent` and
-    `ConsoleTTS`
+    `MacSayTTS` (falls back to `ConsoleTTS` if `say` is unavailable)
 
 3. **Agent Interface**
    - Abstract interface that receives text and returns text plus optional actions
