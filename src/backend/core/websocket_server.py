@@ -17,6 +17,7 @@ from ..agent.simple import EchoAgent
 from ..tts.base import TTS
 from ..tts.simple import ConsoleTTS
 from ..tts.macsay import MacSayTTS
+from ..tts.orpheus import OrpheusStyleTTS
 
 
 class AudioWebSocketServer:
@@ -47,11 +48,17 @@ class AudioWebSocketServer:
         self.tts = tts or self._default_tts()
 
     def _default_tts(self) -> TTS:
-        """Return a TTS instance, preferring ``MacSayTTS`` if available."""
+        """Return a TTS instance, preferring Orpheus if available."""
+        import os
+
+        model_path = os.environ.get("ORPHEUS_MODEL", "orpheus-3b")
         try:
-            return MacSayTTS()
+            return OrpheusStyleTTS(model_path)
         except Exception:
-            return ConsoleTTS()
+            try:
+                return MacSayTTS()
+            except Exception:
+                return ConsoleTTS()
 
     def _timestamp(self) -> str:
         """Return the current timestamp with millisecond precision."""
