@@ -31,3 +31,4 @@ A list of initial tasks to move the project forward.
    startup message.
 1. Added audio byte counters in the UI and periodic byte logging on the backend.
 1. Fixed zero-byte streaming bug by starting MediaRecorder with a timeslice.
+1. Added transcript logging and improved byte logging to avoid duplicates.
