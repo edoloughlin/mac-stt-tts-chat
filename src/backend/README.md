@@ -1,6 +1,6 @@
 # Backend
 
-This directory contains the Python backend for the chat application. The backend wires together the speech-to-text (STT), agent and text-to-speech (TTS) components. A small runner script is provided for testing the flow on the command line.
+This directory contains the Python backend for the chat application. The backend wires together the speech-to-text (STT), agent and text-to-speech (TTS) components. A small runner script is provided for testing the flow on the command line. The backend requires **Python 3.12**.
 
 ## Setup
 
@@ -12,7 +12,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-The only runtime dependency at the moment is [Vosk](https://alphacephei.com/vosk/), which provides streaming STT. Development dependencies (such as `pytest` for the test suite) can be installed via `requirements-dev.txt`.
+Runtime dependencies include [Vosk](https://alphacephei.com/vosk/) for streaming STT and [orpheus-speech](https://pypi.org/project/orpheus-speech/) for high quality TTS. Development dependencies (such as `pytest` for the test suite) can be installed via `requirements-dev.txt`.
 
 ```bash
 pip install -r requirements-dev.txt
