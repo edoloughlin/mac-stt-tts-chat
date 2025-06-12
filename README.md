@@ -22,6 +22,7 @@ This project aims to provide a foundation for building a fully on-device AI voic
 - **WebSocket server:** Streams audio from the UI directly to the STT backend
 - **Raw PCM streaming:** The UI uses an AudioWorklet to send 16 kHz mono PCM
   bytes to the backend for compatibility with Vosk and other STT engines
+- **Silence detection:** Audio frames are skipped when no speech is detected
 
 ---
 
@@ -169,7 +170,7 @@ This will print partial and final transcripts from the streamed audio.
 ---
 ## Running the Backend
 
-Create a virtual environment and install the Python dependencies first:
+The backend requires **Python 3.12**. Create a virtual environment and install the dependencies first:
 
 ```bash
 python3 -m venv .venv
