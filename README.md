@@ -9,7 +9,7 @@ This project aims to provide a foundation for building a fully on-device AI voic
 ## Features
 
 - **Speech-to-Text (STT):** High-accuracy, low-latency transcription using local models
-- **Text-to-Speech (TTS):** Natural-sounding voice synthesis, including streaming playback
+- **Text-to-Speech (TTS):** Backend-generated audio is streamed to the UI for playback
 - **Voice Chat Loop:** Real-time, conversational back-and-forth between user and agent
 - **Optimized for Apple Silicon:** Utilizes Metal, Core ML, and Neural Engine
 - **Built-in streaming STT:** Real-time microphone transcription powered by Vosk

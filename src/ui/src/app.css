@@ -17,6 +17,15 @@
   padding: 0.25rem 0;
 }
 
+.message.agent {
+  text-align: right;
+  color: #06c;
+}
+
+.message.user {
+  color: #000;
+}
+
 .byte-counts {
   margin-bottom: 0.5rem;
   font-size: 0.9rem;

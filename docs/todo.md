@@ -34,3 +34,5 @@ A list of initial tasks to move the project forward.
 1. Added transcript logging and improved byte logging to avoid duplicates.
 1. Fixed incorrect audio encoding by streaming raw 16 kHz PCM via an AudioWorklet.
 1. Hooked up the WebSocket server to the echo agent and console TTS.
+1. Added browser speech synthesis and fixed duplicate transcripts in the UI.
+1. Switched to backend TTS streaming audio to the UI for playback.
