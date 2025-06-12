@@ -22,6 +22,16 @@ class AudioWebSocketServer:
         self.host = host
         self.port = port
         self.stt = VoskStream(model_path)
+        self.bytes_received = 0
+        self.bytes_sent = 0
+
+    async def _log_bytes(self) -> None:
+        """Periodically print the number of audio bytes sent/received."""
+        while True:
+            await asyncio.sleep(10)
+            print(
+                f"Audio bytes received: {self.bytes_received}, sent: {self.bytes_sent}"
+            )
 
     async def _send_transcripts(self, websocket: Any) -> None:
         async for t in self.stt.stream():
@@ -33,15 +43,23 @@ class AudioWebSocketServer:
         try:
             async for message in websocket:
                 if isinstance(message, (bytes, bytearray)):
-                    self.stt.feed_audio(bytes(message))
+                    data = bytes(message)
+                    self.bytes_received += len(data)
+                    self.stt.feed_audio(data)
         finally:
             send_task.cancel()
             with contextlib.suppress(asyncio.CancelledError):
                 await send_task
 
     async def run(self) -> None:
-        async with websockets.serve(self._handler, self.host, self.port):
-            await asyncio.Future()  # run forever
+        log_task = asyncio.create_task(self._log_bytes())
+        try:
+            async with websockets.serve(self._handler, self.host, self.port):
+                await asyncio.Future()  # run forever
+        finally:
+            log_task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await log_task
 
 
 def main(argv: Optional[Iterable[str]] = None) -> None:

@@ -44,6 +44,7 @@ def test_handler_feeds_audio():
         asyncio.run(server._handler(dummy_ws))
 
         assert stt_instance.feed_audio.call_count == 2
+        assert server.bytes_received == 2
 
 
 def test_send_transcripts_sends_messages():

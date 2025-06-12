@@ -4,6 +4,8 @@ import './app.css';
 export default function App() {
   const [messages, setMessages] = useState<string[]>([]);
   const [listening, setListening] = useState(false);
+  const [bytesSent, setBytesSent] = useState(0);
+  const [bytesReceived, setBytesReceived] = useState(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
@@ -14,6 +16,8 @@ export default function App() {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const ws = new WebSocket('ws://localhost:8000');
         wsRef.current = ws;
+        setBytesSent(0);
+        setBytesReceived(0);
 
         const mediaRecorder = new MediaRecorder(stream);
         mediaRecorderRef.current = mediaRecorder;
@@ -24,10 +28,23 @@ export default function App() {
             audioChunksRef.current.push(e.data);
             if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
               wsRef.current.send(await e.data.arrayBuffer());
+              setBytesSent((b) => b + e.data.size);
             }
           }
         };
-        ws.onmessage = (ev: MessageEvent) => {
+        ws.onmessage = async (ev: MessageEvent) => {
+          if (typeof ev.data !== 'string') {
+            let size = 0;
+            if (ev.data instanceof Blob) {
+              size = ev.data.size;
+            } else if (ev.data instanceof ArrayBuffer) {
+              size = ev.data.byteLength;
+            }
+            if (size > 0) {
+              setBytesReceived((b) => b + size);
+            }
+            return;
+          }
           try {
             const t = JSON.parse(ev.data);
             if (t.final) {
@@ -70,6 +87,11 @@ export default function App() {
           <div key={i} className="message">{m}</div>
         ))}
       </div>
+      {listening && (
+        <div className="byte-counts">
+          Sent {bytesSent} bytes / Received {bytesReceived} bytes
+        </div>
+      )}
       <button className="mic-button" onClick={toggleMic}>
         {listening ? '🛑 Stop Listening' : '🎤 Start Listening'}
       </button>

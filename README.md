@@ -15,6 +15,8 @@ This project aims to provide a foundation for building a fully on-device AI voic
 - **Built-in streaming STT:** Real-time microphone transcription powered by Vosk
   with partial and final results.
 - **React UI:** Includes a microphone toggle button to start or stop capturing audio
+- **Live stats:** While listening, the UI shows how many audio bytes have been sent
+  to the backend and received back.
 - **WebSocket server:** Streams audio from the UI directly to the STT backend
 
 ---
@@ -135,6 +137,8 @@ npm run dev
 Open your browser to `http://localhost:5173` to view the app.
 
 Click the microphone button to toggle audio capture on or off.
+While the microphone is active, the UI displays how many audio bytes have been
+sent to and received from the backend.
 
 ---
 
