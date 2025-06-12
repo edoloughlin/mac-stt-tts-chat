@@ -17,6 +17,12 @@
   padding: 0.25rem 0;
 }
 
+.byte-counts {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
 .mic-button {
   padding: 0.5rem 1rem;
   font-size: 1rem;

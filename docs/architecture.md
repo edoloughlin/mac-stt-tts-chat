@@ -16,6 +16,7 @@ This document outlines the planned architecture for the real-time voice chat app
    - Displays conversation history and agent state
    - Captures microphone audio and streams it to the backend STT engine over a WebSocket connection
    - Microphone capture is toggled on/off via a button (no push-to-talk)
+   - Shows live counts of audio bytes sent and received when listening
    - Receives updates from the agent to modify the UI in real time
 
 2. **Audio Pipeline**
