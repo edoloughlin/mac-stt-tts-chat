@@ -9,6 +9,10 @@ This document outlines the planned architecture for the real-time voice chat app
 - Graceful handling of user interruptions
 - Pluggable AI agent interface for conversation logic and UI updates
 
+## Tech Stack
+
+- Python 3.12
+
 ## Components
 
 1. **UI Layer**
