@@ -33,3 +33,4 @@ A list of initial tasks to move the project forward.
 1. Fixed zero-byte streaming bug by starting MediaRecorder with a timeslice.
 1. Added transcript logging and improved byte logging to avoid duplicates.
 1. Fixed incorrect audio encoding by streaming raw 16 kHz PCM via an AudioWorklet.
+1. Hooked up the WebSocket server to the echo agent and console TTS.

@@ -30,6 +30,19 @@ class DummyWebSocket:
         self.sent.append(data)
 
 
+class DummyAgent:
+    async def process(self, text: str) -> str:
+        return text.upper()
+
+
+class DummyTTS:
+    def __init__(self) -> None:
+        self.spoken = []
+
+    async def speak(self, text: str) -> None:
+        self.spoken.append(text)
+
+
 def test_handler_feeds_audio():
     dummy_ws = DummyWebSocket([b"a", b"b"])
 
@@ -68,12 +81,16 @@ def test_send_transcripts_sends_messages():
         m_vosk.return_value = stt_instance
 
         server = AudioWebSocketServer("model", transcript_log=None)
+        server.agent = DummyAgent()
+        server.tts = DummyTTS()
         asyncio.run(server._send_transcripts(dummy_ws))
 
         assert dummy_ws.sent == [
             json.dumps({"text": "hi", "final": False}),
             json.dumps({"text": "bye", "final": True}),
+            json.dumps({"text": "BYE", "final": True, "agent": True}),
         ]
+        assert server.tts.spoken == ["BYE"]
 
 
 def test_send_transcripts_logs_transcripts(tmp_path):
@@ -91,9 +108,12 @@ def test_send_transcripts_logs_transcripts(tmp_path):
 
         log_file = tmp_path / "t.log"
         server = AudioWebSocketServer("model", transcript_log=str(log_file))
+        server.agent = DummyAgent()
+        server.tts = DummyTTS()
         asyncio.run(server._send_transcripts(dummy_ws))
 
         assert log_file.read_text() == "hello\n"
+        assert server.tts.spoken == ["HELLO"]
 
 
 def test_main_starts_server():

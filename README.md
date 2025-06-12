@@ -204,6 +204,9 @@ address it is listening on and runs until interrupted. Use `--host` and
 python -m src.backend.core.websocket_server vosk-model
 ```
 
+The server now also feeds final transcripts to the built-in echo agent and
+`ConsoleTTS`. The echoed response is printed and sent back over the WebSocket.
+
 ---
 ## Final Thoughts
 
