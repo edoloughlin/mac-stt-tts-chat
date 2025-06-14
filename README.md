@@ -239,8 +239,12 @@ a short beep if unavailable), streamed back over the WebSocket and recorded in
 
 For convenience a development runner is provided at `scripts/dev_runner.py`.
 It ensures a Python virtual environment exists, installs the dependencies and
-launches both the WebSocket backend and React frontend. The script displays the
-latest logs in a Rich dashboard and accepts single-letter commands:
+launches both the WebSocket backend and React frontend. If run outside the
+virtual environment it will create it, install the packages and restart itself.
+The script displays the
+latest logs in a Rich dashboard and accepts single-letter commands. Make sure
+the required Vosk and Orpheus models are already installed; the runner will exit
+with instructions if they're missing:
 
 ```
 Q - quit all processes

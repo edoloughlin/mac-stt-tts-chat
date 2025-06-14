@@ -10,14 +10,32 @@ like restart and git pull.
 
 from __future__ import annotations
 
-import asyncio
-import json
 import os
 import subprocess
 import sys
-from datetime import datetime
 from pathlib import Path
+
+VENV_DIR = Path("venv")
+VENV_PY = VENV_DIR / "bin" / "python"
+
+if sys.prefix == sys.base_prefix:
+    if not VENV_PY.exists():
+        print("Creating virtual environment...")
+        subprocess.check_call(["python3.12", "-m", "venv", str(VENV_DIR)])
+    print("Installing dependencies...")
+    subprocess.check_call([str(VENV_PY), "-m", "pip", "install", "-r", "requirements.txt"])
+    dev_req = Path("requirements-dev.txt")
+    if dev_req.exists():
+        subprocess.check_call([str(VENV_PY), "-m", "pip", "install", "-r", str(dev_req)])
+    os.execv(str(VENV_PY), [str(VENV_PY)] + sys.argv)
+
+import asyncio
+import json
+from datetime import datetime
 from typing import List
+
+import contextlib
+
 
 from rich.console import Console
 from rich.layout import Layout
@@ -25,8 +43,6 @@ from rich.live import Live
 from rich.panel import Panel
 from rich.text import Text
 
-VENV_DIR = Path("venv")
-VENV_PY = VENV_DIR / "bin" / "python"
 TRANSCRIPT_LOG = Path("transcript.log")
 BACKEND_LOG = Path("backend.log")
 FRONTEND_LOG = Path("frontend.log")
@@ -71,7 +87,6 @@ def check_models() -> None:
             input("Press Enter when ready to continue...")
         else:
             sys.exit(1)
-
 
 def format_config() -> Text:
     data = {}
@@ -202,16 +217,22 @@ async def main() -> None:
 
     input_task = asyncio.create_task(input_loop())
 
-    with Live(layout, console=console, screen=True, refresh_per_second=2):
-        while not input_task.done():
-            refresh_layout()
-            await asyncio.sleep(0.5)
-
-    await input_task
+    try:
+        with Live(layout, console=console, screen=True, refresh_per_second=2):
+            while not input_task.done():
+                refresh_layout()
+                await asyncio.sleep(0.5)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        input_task.cancel()
+        backend.terminate()
+        frontend.terminate()
+        with contextlib.suppress(asyncio.CancelledError):
+            await input_task
+        await backend.wait()
+        await frontend.wait()
 
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        pass
+    asyncio.run(main())
