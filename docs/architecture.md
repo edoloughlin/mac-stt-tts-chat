@@ -70,7 +70,7 @@ components together for testing. For development convenience there is also a
  dependencies and launches both the backend server and React UI. If started
  outside the virtual environment it creates it, installs the packages and
  restarts itself. Missing Vosk and Orpheus models are downloaded automatically
- after prompting the user.
+ using only macOS built-in tools after prompting the user.
 
 ## Configuration
 

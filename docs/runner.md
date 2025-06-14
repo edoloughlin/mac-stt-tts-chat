@@ -28,9 +28,8 @@ The bottom line of the terminal shows a small prompt accepting single-letter com
 
 - `Q` – quit all running processes and exit.
 - `R` – restart the backend services (relaunch the WebSocket server and refresh the log panes).
-- `P` – perform `git pull` and restart the backend.
 
-The current commit hash and timestamp are displayed right justified on the bottom line.
+The current timestamp is displayed right justified on the bottom line.
 
 ## 4. Implementation Options
 
@@ -63,6 +62,6 @@ The *Rich* library will be used, as neither tmux nor screen are installed by def
    - Pane 2: displays a view of the current config, with colours distinguishing property names from values
    - Pane 3: run the WebSocket streamer backend (e.g. `python -m src.backend.server > backkend.log`) and display a colourised equivalent of `tail -F backend.log`
    - Pane 4: display the output of `npm run dev`
-5. Display the command prompt on the bottom line for `Q`, `R` and `P` actions and the current commit hash and timestamp.
+5. Display the command prompt on the bottom line for `Q` and `R` actions and show the current timestamp.
 
 This plan provides an installer and runner that simplifies setup and offers a convenient console dashboard for development.

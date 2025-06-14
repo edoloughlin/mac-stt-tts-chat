@@ -5,7 +5,7 @@ This script ensures a Python virtual environment exists,
 installs dependencies and launches the backend WebSocket
 server along with the React frontend. A Rich based
 console layout displays logs and allows basic commands
-like restart and git pull.
+like quitting or restarting the backend.
 """
 
 from __future__ import annotations
@@ -75,13 +75,15 @@ def _download_vosk() -> None:
 
 
 def _download_orpheus(dest: Path) -> None:
-    repo = os.environ.get(
+    url = os.environ.get(
         "ORPHEUS_REPO",
-        "https://huggingface.co/orpheus-speech/orpheus-3b-styletts2",
+        "https://huggingface.co/orpheus-speech/orpheus-3b-styletts2/resolve/main/orpheus.tar.gz",
     )
-    console.print(f"[bold]Cloning Orpheus model from {repo}...[/]")
-    subprocess.check_call(["git", "lfs", "install"])
-    subprocess.check_call(["git", "lfs", "clone", repo, str(dest)])
+    console.print(f"[bold]Downloading Orpheus model from {url}...[/]")
+    subprocess.check_call(["curl", "-L", "-o", "orpheus.tar.gz", url])
+    dest.mkdir(exist_ok=True)
+    subprocess.check_call(["tar", "-xzf", "orpheus.tar.gz", "-C", str(dest)])
+    Path("orpheus.tar.gz").unlink()
 
 
 def check_models() -> None:
@@ -95,7 +97,7 @@ def check_models() -> None:
 
     orpheus = Path(os.environ.get("ORPHEUS_MODEL", "orpheus-3b-styletts2"))
     if not orpheus.exists():
-        ans = input("Orpheus model not found. Download now (requires git lfs)? [y/N] ")
+        ans = input("Orpheus model not found. Download now (~1GB)? [y/N] ")
         if ans.lower().startswith("y"):
             _download_orpheus(orpheus)
         else:
@@ -189,11 +191,8 @@ async def main() -> None:
             Panel(Text("\n".join(frontend_lines[-100:])), title="frontend")
         )
         layout["config"].update(Panel(format_config(), title="config"))
-        footer = Text("Q quit | R restart | P pull")
-        commit = (
-            subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode().strip()
-        )
-        footer.append(f"    {commit} {datetime.now():%Y-%m-%d %H:%M:%S}", style="dim")
+        footer = Text("Q quit | R restart")
+        footer.append(f"    {datetime.now():%Y-%m-%d %H:%M:%S}", style="dim")
         layout.footer = Panel(footer)
 
     async def input_loop() -> None:
@@ -209,16 +208,6 @@ async def main() -> None:
                 frontend.terminate()
                 return
             if ch == "R":
-                backend.terminate()
-                frontend.terminate()
-                await backend.wait()
-                await frontend.wait()
-                backend = await start_backend(python)
-                asyncio.create_task(read_stream(backend.stdout, backend_lines))
-                frontend = await start_frontend()
-                asyncio.create_task(read_stream(frontend.stdout, frontend_lines))
-            if ch == "P":
-                subprocess.call(["git", "pull"])
                 backend.terminate()
                 frontend.terminate()
                 await backend.wait()
