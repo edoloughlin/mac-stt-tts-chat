@@ -1,7 +1,16 @@
 class PCMProcessor extends AudioWorkletProcessor {
   private readonly inputSampleRate = sampleRate;
   private readonly outputSampleRate = 16000;
-  private readonly silenceThreshold = 0.002;
+  private silenceThreshold = 0.002;
+
+  constructor() {
+    super();
+    this.port.onmessage = (ev: MessageEvent) => {
+      if (typeof ev.data.silenceThreshold === 'number') {
+        this.silenceThreshold = ev.data.silenceThreshold;
+      }
+    };
+  }
 
   process(inputs: Float32Array[][]) {
     const input = inputs[0][0];
