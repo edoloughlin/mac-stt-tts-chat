@@ -66,11 +66,11 @@ src/
 
 A simple CLI runner located at `src/backend/core/runner.py` wires the default
 components together for testing. For development convenience there is also a
-Rich based dashboard runner at `scripts/dev_runner.py` which installs
-dependencies and launches both the backend server and React UI. If started
-outside the virtual environment it creates it, installs the packages and
-restarts itself. It expects the required Vosk and Orpheus models to already be
-downloaded.
+ Rich based dashboard runner at `scripts/dev_runner.py` which installs
+ dependencies and launches both the backend server and React UI. If started
+ outside the virtual environment it creates it, installs the packages and
+ restarts itself. Missing Vosk and Orpheus models are downloaded automatically
+ after prompting the user.
 
 ## Configuration
 
