@@ -41,3 +41,4 @@ A list of initial tasks to move the project forward.
 1. Added silence detection in the UI to avoid sending empty audio frames.
 1. Included `orpheus-speech` in the dependency manifests.
 1. Added a spectrogram display and slider to adjust the silence threshold.
+1. Added detailed error messages for invalid or unknown config options.

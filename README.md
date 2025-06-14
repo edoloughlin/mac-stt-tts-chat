@@ -219,6 +219,8 @@ To stream audio from the React UI, start the WebSocket server. It prints the
 address it is listening on and runs until interrupted. The server can be
 configured via a JSON file passed with `--config`. Command line options override
 the values in the config. Use `--host` and `--port` to change the bind address.
+If the JSON contains unknown options or invalid syntax, the server will report
+the offending field when it starts.
 Conversation transcripts are written to `transcript.log` by default. Use
 `--transcript-log` to change the file path. Each line in the log is timestamped
 with millisecond precision and prefixed with `<` or `>` to indicate STT input or
