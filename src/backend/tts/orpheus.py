@@ -9,13 +9,13 @@ from .base import TTS
 class OrpheusStyleTTS(TTS):
     """TTS using the Orpheus 3B / StyleTTS 2 model."""
 
-    def __init__(self, model_path: str, device: str = "cpu") -> None:
+    def __init__(self, model_path: str, device: str = "cpu", voice: str = "default") -> None:
         try:
             from orpheus_speech import Synthesizer  # type: ignore
         except Exception as exc:  # pragma: no cover - optional dependency
             raise RuntimeError("orpheus-speech is required for OrpheusStyleTTS") from exc
 
-        self._synth = Synthesizer(str(Path(model_path)), device=device)
+        self._synth = Synthesizer(str(Path(model_path)), device=device, voice=voice)
 
     async def speak(self, text: str) -> bytes:
         def _run() -> bytes:

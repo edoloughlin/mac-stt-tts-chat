@@ -1,0 +1,19 @@
+{
+  "stt": {
+    "type": "vosk",
+    "model_path": "vosk-model",
+    "samplerate": 16000
+  },
+  "tts": {
+    "type": "orpheus",
+    "model_path": "orpheus-3b",
+    "device": "cpu",
+    "voice": "default"
+  },
+  "agent": { "type": "echo" },
+  "server": {
+    "host": "localhost",
+    "port": 8000,
+    "transcript_log": "transcript.log"
+  }
+}
