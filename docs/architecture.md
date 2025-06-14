@@ -65,7 +65,9 @@ src/
 ```
 
 A simple CLI runner located at `src/backend/core/runner.py` wires the default
-components together for testing.
+components together for testing. For development convenience there is also a
+Rich based dashboard runner at `scripts/dev_runner.py` which installs
+dependencies and launches both the backend server and React UI.
 
 ## Configuration
 
