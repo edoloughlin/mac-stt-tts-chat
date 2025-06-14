@@ -41,21 +41,31 @@ class BackendConfig:
     server: ServerConfig = field(default_factory=ServerConfig)
 
 
-def _update(obj, data):
+def _update(obj, data, path=""):
     for key, value in data.items():
-        if hasattr(obj, key):
-            attr = getattr(obj, key)
-            if is_dataclass(attr) and isinstance(value, dict):
-                _update(attr, value)
-            else:
-                setattr(obj, key, value)
+        if not hasattr(obj, key):
+            raise KeyError(f"Unknown config option '{path + key}'")
+        attr = getattr(obj, key)
+        if is_dataclass(attr) and isinstance(value, dict):
+            _update(attr, value, path=f"{path}{key}.")
+        else:
+            setattr(obj, key, value)
 
 
 def load_config(path: str | None) -> BackendConfig:
     cfg = BackendConfig()
-    if path:
+    if not path:
+        return cfg
+    try:
         data = json.loads(Path(path).read_text())
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"Config file '{path}' not found") from e
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON in config file '{path}': {e}") from e
+    try:
         _update(cfg, data)
+    except KeyError as e:
+        raise ValueError(f"Error in config file '{path}': {e.args[0]}") from e
     return cfg
 
 
