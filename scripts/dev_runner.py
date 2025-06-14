@@ -5,7 +5,7 @@ This script ensures a Python virtual environment exists,
 installs dependencies and launches the backend WebSocket
 server along with the React frontend. A Rich based
 console layout displays logs and allows basic commands
-like restart and git pull.
+like quitting or restarting the backend.
 """
 
 from __future__ import annotations
@@ -65,23 +65,41 @@ def install_deps(python: Path) -> None:
         subprocess.check_call([str(python), "-m", "pip", "install", "-r", str(dev_req)])
 
 
+def _download_vosk() -> None:
+    url = "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
+    console.print(f"[bold]Downloading Vosk model from {url}...[/]")
+    subprocess.check_call(["curl", "-L", "-o", "model.zip", url])
+    subprocess.check_call(["unzip", "-q", "model.zip"])
+    os.rename("vosk-model-small-en-us-0.15", "vosk-model")
+    Path("model.zip").unlink()
+
+
+def _download_orpheus(dest: Path) -> None:
+    url = os.environ.get(
+        "ORPHEUS_REPO",
+        "https://huggingface.co/orpheus-speech/orpheus-3b-styletts2/resolve/main/orpheus.tar.gz",
+    )
+    console.print(f"[bold]Downloading Orpheus model from {url}...[/]")
+    subprocess.check_call(["curl", "-L", "-o", "orpheus.tar.gz", url])
+    dest.mkdir(exist_ok=True)
+    subprocess.check_call(["tar", "-xzf", "orpheus.tar.gz", "-C", str(dest)])
+    Path("orpheus.tar.gz").unlink()
+
+
 def check_models() -> None:
-    """Ensure STT/TTS model files exist, prompting for download if missing."""
+    """Ensure STT/TTS model files exist, downloading them with permission."""
     if not Path("vosk-model").exists():
-        ans = input("Vosk model not found. Download manually? [y/N] ")
+        ans = input("Vosk model not found. Download now (~50MB)? [y/N] ")
         if ans.lower().startswith("y"):
-            console.print("Please download a model from https://alphacephei.com/vosk/models")
-            input("Press Enter when ready to continue...")
+            _download_vosk()
         else:
             sys.exit(1)
-    orpheus = os.environ.get("ORPHEUS_MODEL", "orpheus-3b-styletts2")
-    if not Path(orpheus).exists():
-        ans = input("Orpheus model not found. Download manually? [y/N] ")
+
+    orpheus = Path(os.environ.get("ORPHEUS_MODEL", "orpheus-3b-styletts2"))
+    if not orpheus.exists():
+        ans = input("Orpheus model not found. Download now (~1GB)? [y/N] ")
         if ans.lower().startswith("y"):
-            console.print(
-                "Clone https://huggingface.co/orpheus-speech/orpheus-3b-styletts2 with git lfs"
-            )
-            input("Press Enter when ready to continue...")
+            _download_orpheus(orpheus)
         else:
             sys.exit(1)
 
@@ -173,11 +191,8 @@ async def main() -> None:
             Panel(Text("\n".join(frontend_lines[-100:])), title="frontend")
         )
         layout["config"].update(Panel(format_config(), title="config"))
-        footer = Text("Q quit | R restart | P pull")
-        commit = (
-            subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode().strip()
-        )
-        footer.append(f"    {commit} {datetime.now():%Y-%m-%d %H:%M:%S}", style="dim")
+        footer = Text("Q quit | R restart")
+        footer.append(f"    {datetime.now():%Y-%m-%d %H:%M:%S}", style="dim")
         layout.footer = Panel(footer)
 
     async def input_loop() -> None:
@@ -193,16 +208,6 @@ async def main() -> None:
                 frontend.terminate()
                 return
             if ch == "R":
-                backend.terminate()
-                frontend.terminate()
-                await backend.wait()
-                await frontend.wait()
-                backend = await start_backend(python)
-                asyncio.create_task(read_stream(backend.stdout, backend_lines))
-                frontend = await start_frontend()
-                asyncio.create_task(read_stream(frontend.stdout, frontend_lines))
-            if ch == "P":
-                subprocess.call(["git", "pull"])
                 backend.terminate()
                 frontend.terminate()
                 await backend.wait()
