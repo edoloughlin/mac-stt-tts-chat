@@ -10,8 +10,8 @@ A list of initial tasks to move the project forward.
 1. Create the asynchronous event loop connecting STT, Agent and TTS modules.
 1. Add interruption detection so user speech can cut off TTS playback.
 1. Define a plugin mechanism to swap out the agent with more advanced versions.
-1. Document configuration options and provide example scripts.
-1. Write tests for individual components where possible.
+1. ~~Document configuration options and provide example scripts.~~
+1. ~~Write tests for individual components where possible.~~
 
 # Done
 

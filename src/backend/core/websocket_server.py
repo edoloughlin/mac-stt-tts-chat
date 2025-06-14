@@ -18,6 +18,13 @@ from ..tts.base import TTS
 from ..tts.simple import ConsoleTTS
 from ..tts.macsay import MacSayTTS
 from ..tts.orpheus import OrpheusStyleTTS
+from ..config import (
+    BackendConfig,
+    create_agent,
+    create_stt,
+    create_tts,
+    load_config,
+)
 
 
 class AudioWebSocketServer:
@@ -129,28 +136,40 @@ def main(argv: Optional[Iterable[str]] = None) -> None:
     import sys
 
     parser = argparse.ArgumentParser(description="Run the audio WebSocket server")
-    parser.add_argument("model", help="Path to Vosk model")
-    parser.add_argument("--host", default="localhost", help="Host to bind")
-    parser.add_argument("--port", type=int, default=8000, help="Port to bind")
+    parser.add_argument("model", nargs="?", help="Path to Vosk model")
+    parser.add_argument("--host", help="Host to bind")
+    parser.add_argument("--port", type=int, help="Port to bind")
     parser.add_argument(
         "--transcript-log",
-        default="transcript.log",
         help="File to write final transcripts",
     )
+    parser.add_argument("--config", help="Path to JSON config file")
     args = parser.parse_args(list(argv) if argv is not None else None)
+
+    cfg = load_config(args.config)
+    if args.model:
+        cfg.stt.model_path = args.model
+    if args.host:
+        cfg.server.host = args.host
+    if args.port:
+        cfg.server.port = args.port
+    if args.transcript_log:
+        cfg.server.transcript_log = args.transcript_log
 
     try:
         server = AudioWebSocketServer(
-            args.model,
-            host=args.host,
-            port=args.port,
-            transcript_log=args.transcript_log,
+            cfg.stt.model_path,
+            host=cfg.server.host,
+            port=cfg.server.port,
+            transcript_log=cfg.server.transcript_log,
+            agent=create_agent(cfg.agent),
+            tts=create_tts(cfg.tts),
         )
     except RuntimeError as exc:  # Missing optional dependency
         print(f"Error: {exc}", file=sys.stderr)
         return
 
-    print(f"Listening on ws://{args.host}:{args.port}")
+    print(f"Listening on ws://{cfg.server.host}:{cfg.server.port}")
     try:
         asyncio.run(server.run())
     except KeyboardInterrupt:

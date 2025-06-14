@@ -198,6 +198,9 @@ git lfs clone https://huggingface.co/orpheus-speech/orpheus-3b-styletts2
 Set the `ORPHEUS_MODEL` environment variable to the path of the cloned
 repository so the backend can find it.
 
+The voice used by Orpheus can be customised in the configuration file via the
+`voice` field under the `tts` section.
+
 A small runner script wires the pieces together using an echo agent and a console
 TTS implementation:
 
@@ -211,14 +214,16 @@ to stdout.
 ### Running the WebSocket server
 
 To stream audio from the React UI, start the WebSocket server. It prints the
-address it is listening on and runs until interrupted. Use `--host` and
-`--port` to change the bind address. Conversation transcripts are written to
-`transcript.log` by default. Use `--transcript-log` to change the file path.
-Each line in the log is timestamped with millisecond precision and prefixed with
-`<` or `>` to indicate STT input or TTS output:
+address it is listening on and runs until interrupted. The server can be
+configured via a JSON file passed with `--config`. Command line options override
+the values in the config. Use `--host` and `--port` to change the bind address.
+Conversation transcripts are written to `transcript.log` by default. Use
+`--transcript-log` to change the file path. Each line in the log is timestamped
+with millisecond precision and prefixed with `<` or `>` to indicate STT input or
+TTS output:
 
 ```bash
-python -m src.backend.core.websocket_server vosk-model
+python -m src.backend.core.websocket_server --config config.example.json
 ```
 
 The server now also feeds final transcripts to the built-in echo agent. Speech

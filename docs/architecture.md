@@ -64,3 +64,10 @@ src/
 
 A simple CLI runner located at `src/backend/core/runner.py` wires the default
 components together for testing.
+
+## Configuration
+
+Each backend component (STT, TTS, agent and server) can be configured via a JSON
+file. The WebSocket server loads this configuration at startup and uses the
+settings to instantiate the appropriate classes. Command line arguments override
+values from the file.

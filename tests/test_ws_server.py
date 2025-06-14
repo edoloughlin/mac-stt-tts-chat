@@ -10,6 +10,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 from src.backend.core import websocket_server
 from src.backend.core.websocket_server import AudioWebSocketServer
+from src.backend.config import BackendConfig, ServerConfig
 from src.backend.stt import Transcript
 
 
@@ -126,14 +127,50 @@ def test_send_transcripts_logs_transcripts(tmp_path):
 def test_main_starts_server():
     with mock.patch(
         "src.backend.core.websocket_server.AudioWebSocketServer"
-    ) as cls, mock.patch("asyncio.run") as run:
+    ) as cls, mock.patch("asyncio.run") as run, mock.patch(
+        "src.backend.core.websocket_server.load_config"
+    ) as load, mock.patch(
+        "src.backend.core.websocket_server.create_tts", return_value=DummyTTS()
+    ):
         inst = cls.return_value
+        load.return_value = BackendConfig()
         websocket_server.main(["model", "--host", "0.0.0.0", "--port", "1234"])
 
         cls.assert_called_with(
-            "model", host="0.0.0.0", port=1234, transcript_log="transcript.log"
+            "model",
+            host="0.0.0.0",
+            port=1234,
+            transcript_log="transcript.log",
+            agent=mock.ANY,
+            tts=mock.ANY,
         )
         run.assert_called_once_with(inst.run())
+
+
+def test_main_uses_config_file(tmp_path):
+    cfg = tmp_path / "c.json"
+    cfg.write_text("{}")
+    with mock.patch(
+        "src.backend.core.websocket_server.AudioWebSocketServer"
+    ) as cls, mock.patch("asyncio.run") as run, mock.patch(
+        "src.backend.core.websocket_server.load_config"
+    ) as load, mock.patch(
+        "src.backend.core.websocket_server.create_tts", return_value=DummyTTS()
+    ):
+        load.return_value = BackendConfig(
+            server=ServerConfig(host="h", port=9)
+        )
+        websocket_server.main(["--config", str(cfg)])
+
+        cls.assert_called_with(
+            "vosk-model",
+            host="h",
+            port=9,
+            transcript_log="transcript.log",
+            agent=mock.ANY,
+            tts=mock.ANY,
+        )
+        run.assert_called_once_with(cls.return_value.run())
 
 
 def test_log_bytes_only_when_changed():
