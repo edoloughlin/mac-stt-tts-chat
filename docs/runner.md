@@ -19,15 +19,18 @@ This document outlines a proposed script to set up and run the project backend. 
 
 A tmux-like layout is recommended. The layout consists of three panes:
 
-1. **Top Half** – continuously tails `transcript.log`.
-2. **Bottom Left (2/3 width)** – shows log output from the WebSocket streaming backend.
-3. **Bottom Right (1/3 width)** – displays output from `npm run dev` for the React frontend.
+1. **Top Left (2/3 width)** – continuously tails `transcript.log`. Applies colours to make the timestamp distinct. Incoming text (denoted by '< ') and outgoing text (denoted by '> ') are coloured differently.
+2. **Top right (1/3 width)** – shows the backend configuration. Properties and values are coloured differently.
+3. **Bottom Left (2/3 width)** – shows log output from the WebSocket streaming backend.
+4. **Bottom Right (1/3 width)** – displays output from `npm run dev` for the React frontend.
 
 The bottom line of the terminal shows a small prompt accepting single-letter commands:
 
 - `Q` – quit all running processes and exit.
 - `R` – restart the backend services (relaunch the WebSocket server and refresh the log panes).
-- `P` – perform `git pull` and print the latest commit hash and date.
+- `P` – perform `git pull` and restart the backend.
+
+The current commit hash and timestamp are displayed right justified on the bottom line.
 
 ## 4. Implementation Options
 
@@ -48,17 +51,18 @@ Below are possible approaches to implement the console interface.
 - **Pros:** modern Python interface with colors and layout helpers; cross‑platform.
 - **Cons:** not designed for complex pane layouts; implementing a persistent prompt with multiple subprocess outputs is non‑trivial.
 
-Using `tmux` is likely the simplest solution because it naturally supports pane splitting and command execution. The script can generate a temporary tmux session, configure the panes and bind the `Q`, `R` and `P` keys to the appropriate commands.
+The *Rich* library will be used, as neither tmux nor screen are installed by default on MacOS.
 
 ## 5. Startup Workflow
 
 1. Ensure the virtual environment exists and is active.
 2. Validate that Python dependencies and required models are installed, prompting before any downloads.
 3. Create an empty `transcript.log` if it does not already exist.
-4. Launch a tmux session with the layout described above:
-   - Pane 1: `tail -n 100 -F transcript.log`
-   - Pane 2: run the WebSocket streamer backend (e.g. `python -m src.backend.server`)
-   - Pane 3: `npm run dev`
-5. Display the command prompt on the bottom line for `Q`, `R` and `P` actions.
+4. Launch a Rich application with the layout described above:
+   - Pane 1: displays a colourised equivalent of `tail -n 100 -F transcript.log`
+   - Pane 2: displays a view of the current config, with colours distinguishing property names from values
+   - Pane 3: run the WebSocket streamer backend (e.g. `python -m src.backend.server > backkend.log`) and display a colourised equivalent of `tail -F backend.log`
+   - Pane 4: display the output of `npm run dev`
+5. Display the command prompt on the bottom line for `Q`, `R` and `P` actions and the current commit hash and timestamp.
 
 This plan provides an installer and runner that simplifies setup and offers a convenient console dashboard for development.
