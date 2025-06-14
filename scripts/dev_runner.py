@@ -65,23 +65,39 @@ def install_deps(python: Path) -> None:
         subprocess.check_call([str(python), "-m", "pip", "install", "-r", str(dev_req)])
 
 
+def _download_vosk() -> None:
+    url = "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
+    console.print(f"[bold]Downloading Vosk model from {url}...[/]")
+    subprocess.check_call(["curl", "-L", "-o", "model.zip", url])
+    subprocess.check_call(["unzip", "-q", "model.zip"])
+    os.rename("vosk-model-small-en-us-0.15", "vosk-model")
+    Path("model.zip").unlink()
+
+
+def _download_orpheus(dest: Path) -> None:
+    repo = os.environ.get(
+        "ORPHEUS_REPO",
+        "https://huggingface.co/orpheus-speech/orpheus-3b-styletts2",
+    )
+    console.print(f"[bold]Cloning Orpheus model from {repo}...[/]")
+    subprocess.check_call(["git", "lfs", "install"])
+    subprocess.check_call(["git", "lfs", "clone", repo, str(dest)])
+
+
 def check_models() -> None:
-    """Ensure STT/TTS model files exist, prompting for download if missing."""
+    """Ensure STT/TTS model files exist, downloading them with permission."""
     if not Path("vosk-model").exists():
-        ans = input("Vosk model not found. Download manually? [y/N] ")
+        ans = input("Vosk model not found. Download now (~50MB)? [y/N] ")
         if ans.lower().startswith("y"):
-            console.print("Please download a model from https://alphacephei.com/vosk/models")
-            input("Press Enter when ready to continue...")
+            _download_vosk()
         else:
             sys.exit(1)
-    orpheus = os.environ.get("ORPHEUS_MODEL", "orpheus-3b-styletts2")
-    if not Path(orpheus).exists():
-        ans = input("Orpheus model not found. Download manually? [y/N] ")
+
+    orpheus = Path(os.environ.get("ORPHEUS_MODEL", "orpheus-3b-styletts2"))
+    if not orpheus.exists():
+        ans = input("Orpheus model not found. Download now (requires git lfs)? [y/N] ")
         if ans.lower().startswith("y"):
-            console.print(
-                "Clone https://huggingface.co/orpheus-speech/orpheus-3b-styletts2 with git lfs"
-            )
-            input("Press Enter when ready to continue...")
+            _download_orpheus(orpheus)
         else:
             sys.exit(1)
 

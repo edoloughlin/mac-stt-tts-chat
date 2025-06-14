@@ -180,25 +180,12 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Next download a Vosk model (50MB) and extract it somewhere on disk:
-
-```bash
-curl -L -o model.zip https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip
-unzip model.zip && mv vosk-model-small-en-us-0.15 vosk-model
-```
-
-### Installing Orpheus 3B / StyleTTS 2
-
-Install the TTS package and download the model weights:
-
-```bash
-pip install orpheus-speech
-git lfs install
-git lfs clone https://huggingface.co/orpheus-speech/orpheus-3b-styletts2
-```
-
-Set the `ORPHEUS_MODEL` environment variable to the path of the cloned
-repository so the backend can find it.
+The development runner will download the required Vosk and Orpheus models
+automatically after asking for permission. If you prefer manual installation,
+download a Vosk model from <https://alphacephei.com/vosk/models> and clone the
+Orpheus repository with `git lfs`. Set the `ORPHEUS_MODEL` environment variable
+to the path of the cloned repository if you use a custom location. Use
+`ORPHEUS_REPO` to override the URL used for automatic downloads.
 
 The voice used by Orpheus can be customised in the configuration file via the
 `voice` field under the `tts` section.
@@ -242,9 +229,8 @@ It ensures a Python virtual environment exists, installs the dependencies and
 launches both the WebSocket backend and React frontend. If run outside the
 virtual environment it will create it, install the packages and restart itself.
 The script displays the
-latest logs in a Rich dashboard and accepts single-letter commands. Make sure
-the required Vosk and Orpheus models are already installed; the runner will exit
-with instructions if they're missing:
+latest logs in a Rich dashboard and accepts single-letter commands. Missing
+models are downloaded automatically after confirmation:
 
 ```
 Q - quit all processes
