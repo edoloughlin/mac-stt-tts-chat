@@ -40,3 +40,4 @@ A list of initial tasks to move the project forward.
 1. Added Orpheus 3B / StyleTTS 2 backend for high-quality speech synthesis.
 1. Added silence detection in the UI to avoid sending empty audio frames.
 1. Included `orpheus-speech` in the dependency manifests.
+1. Added a spectrogram display and slider to adjust the silence threshold.

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './app.css';
 
 type Message = {
@@ -11,10 +11,20 @@ export default function App() {
   const [listening, setListening] = useState(false);
   const [bytesSent, setBytesSent] = useState(0);
   const [bytesReceived, setBytesReceived] = useState(0);
+  const [silenceThreshold, setSilenceThreshold] = useState(0.002);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const workletNodeRef = useRef<AudioWorkletNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const animRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (workletNodeRef.current) {
+      workletNodeRef.current.port.postMessage({ silenceThreshold });
+    }
+  }, [silenceThreshold]);
 
   const toggleMic = async () => {
     if (!listening) {
@@ -30,8 +40,12 @@ export default function App() {
         await ctx.audioWorklet.addModule(new URL('./pcmWorklet.ts', import.meta.url));
         const source = ctx.createMediaStreamSource(stream);
         sourceRef.current = source;
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        analyserRef.current = analyser;
         const node = new AudioWorkletNode(ctx, 'pcm-processor');
         workletNodeRef.current = node;
+        node.port.postMessage({ silenceThreshold });
         node.port.onmessage = (ev: MessageEvent) => {
           const data = ev.data as ArrayBuffer;
           if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -41,7 +55,32 @@ export default function App() {
         };
         const gain = ctx.createGain();
         gain.gain.value = 0;
-        source.connect(node).connect(gain).connect(ctx.destination);
+        source.connect(analyser);
+        analyser.connect(node).connect(gain).connect(ctx.destination);
+
+        const draw = () => {
+          if (!analyserRef.current || !canvasRef.current) return;
+          const analyser = analyserRef.current;
+          const canvas = canvasRef.current;
+          const canvasCtx = canvas.getContext('2d');
+          if (!canvasCtx) return;
+          const bufferLength = analyser.frequencyBinCount;
+          const dataArray = new Uint8Array(bufferLength);
+          analyser.getByteFrequencyData(dataArray);
+          canvasCtx.fillStyle = 'black';
+          canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+          const barWidth = canvas.width / bufferLength;
+          for (let i = 0; i < bufferLength; i++) {
+            const value = dataArray[i];
+            const percent = value / 255;
+            const height = canvas.height * percent;
+            const offset = canvas.height - height;
+            canvasCtx.fillStyle = '#0f0';
+            canvasCtx.fillRect(i * barWidth, offset, barWidth, height);
+          }
+          animRef.current = requestAnimationFrame(draw);
+        };
+        draw();
         ws.onmessage = async (ev: MessageEvent) => {
           if (typeof ev.data !== 'string') {
             const buf =
@@ -93,6 +132,10 @@ export default function App() {
         wsRef.current.close();
         wsRef.current = null;
       }
+      if (animRef.current) {
+        cancelAnimationFrame(animRef.current);
+        animRef.current = null;
+      }
       console.log('Microphone capture stopped');
       setListening(false);
     }
@@ -111,6 +154,22 @@ export default function App() {
           Sent {bytesSent} bytes / Received {bytesReceived} bytes
         </div>
       )}
+      <div className="controls">
+        <label>
+          Silence Threshold: {silenceThreshold.toFixed(3)}
+          <input
+            type="range"
+            min="0"
+            max="0.01"
+            step="0.001"
+            value={silenceThreshold}
+            onChange={(e) =>
+              setSilenceThreshold(parseFloat(e.target.value))
+            }
+          />
+        </label>
+      </div>
+      <canvas ref={canvasRef} className="spectrogram" width={400} height={100} />
       <button className="mic-button" onClick={toggleMic}>
         {listening ? '🛑 Stop Listening' : '🎤 Start Listening'}
       </button>

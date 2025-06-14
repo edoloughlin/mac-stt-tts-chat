@@ -23,6 +23,8 @@ This project aims to provide a foundation for building a fully on-device AI voic
 - **Raw PCM streaming:** The UI uses an AudioWorklet to send 16 kHz mono PCM
   bytes to the backend for compatibility with Vosk and other STT engines
 - **Silence detection:** Audio frames are skipped when no speech is detected
+- **Adjustable threshold:** The silence threshold can be tweaked via a slider in
+  the UI and a live spectrogram visualizes microphone input
 
 ---
 

@@ -21,6 +21,8 @@ This document outlines the planned architecture for the real-time voice chat app
    - Captures microphone audio and streams it to the backend STT engine over a WebSocket connection
    - Skips sending audio when input is silent to reduce bandwidth
    - Microphone capture is toggled on/off via a button (no push-to-talk)
+   - A slider controls the silence detection threshold and a live spectrogram
+     shows microphone levels
    - Shows live counts of audio bytes sent and received when listening
    - Receives updates from the agent to modify the UI in real time
 
