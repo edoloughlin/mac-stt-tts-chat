@@ -2,4 +2,6 @@
 
 Utility code and interfaces for integrating local speech recognition engines.
 
-Recommended engines include `whisper.cpp` and `mlx-whisper`. See the project root README for installation tips.
+The WebSocket backend currently uses **Vosk** for low-latency streaming STT.
+Other engines such as `whisper.cpp` and `mlx-whisper` are also supported.
+See the project root README for installation tips and additional options.
