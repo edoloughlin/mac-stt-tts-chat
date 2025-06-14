@@ -35,8 +35,6 @@ from datetime import datetime
 from typing import List
 
 import contextlib
-
-
 from rich.console import Console
 from rich.layout import Layout
 from rich.live import Live
@@ -49,7 +47,6 @@ FRONTEND_LOG = Path("frontend.log")
 CONFIG_PATH = Path("config.example.json")
 
 console = Console()
-
 
 def ensure_venv() -> Path:
     """Create the virtual environment if needed."""
