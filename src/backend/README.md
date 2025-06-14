@@ -5,6 +5,7 @@ This directory contains the Python backend for the chat application. The backend
 ## Setup
 
 It is recommended to run the backend in an isolated Python virtual environment.
+As of the time of coding this, Vosk requires Python 3.12 and will not work with 3.13 or later.
 
 ```bash
 python3 -m venv .venv
