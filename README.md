@@ -235,6 +235,25 @@ is produced using **Orpheus 3B / StyleTTS 2** (falling back to `say` on macOS or
 a short beep if unavailable), streamed back over the WebSocket and recorded in
 `transcript.log`.
 
+### Development Runner
+
+For convenience a development runner is provided at `scripts/dev_runner.py`.
+It ensures a Python virtual environment exists, installs the dependencies and
+launches both the WebSocket backend and React frontend. The script displays the
+latest logs in a Rich dashboard and accepts single-letter commands:
+
+```
+Q - quit all processes
+R - restart the backend
+P - git pull and restart
+```
+
+Run the script from the repository root:
+
+```bash
+./scripts/dev_runner.py
+```
+
 ---
 ## Final Thoughts
 
