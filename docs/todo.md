@@ -45,3 +45,4 @@ A list of initial tasks to move the project forward.
 1. Implemented a Rich based development runner that installs dependencies and
    launches the backend and frontend together.
 1. Added automatic model downloads to the development runner.
+1. Simplified Orpheus download to use curl and tar instead of git.

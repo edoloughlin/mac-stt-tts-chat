@@ -49,7 +49,7 @@ This project aims to provide a foundation for building a fully on-device AI voic
 | ---------------- | -------------------------------------------------- | ------------------------------------------ |
 | **Piper (MIT)**  | `brew install portaudio`<br>`git clone https://github.com/rhasspy/piper && make` | Fast, many voices, 24kHz, <1GB             |
 | **Kokoro-82 M**  | `pip install kokoro`                               | Very fast, 82M params, natural sound       |
-| **Orpheus 3B / StyleTTS 2** | `pip install orpheus-speech`<br>`git lfs clone https://huggingface.co/orpheus-speech/orpheus-3b-styletts2` | Diffusion-based, near-human quality |
+| **Orpheus 3B / StyleTTS 2** | `pip install orpheus-speech` (model auto-download) | Diffusion-based, near-human quality |
 | **Mimic 3**      | `pip install mimic3-tts`                           | <1GB RAM, privacy-first, multi-language    |
 | **AVSpeechSynthesizer** | Native API                                  | Built-in voices, offline once downloaded   |
 
@@ -182,10 +182,16 @@ pip install -r requirements.txt
 
 The development runner will download the required Vosk and Orpheus models
 automatically after asking for permission. If you prefer manual installation,
-download a Vosk model from <https://alphacephei.com/vosk/models> and clone the
-Orpheus repository with `git lfs`. Set the `ORPHEUS_MODEL` environment variable
-to the path of the cloned repository if you use a custom location. Use
-`ORPHEUS_REPO` to override the URL used for automatic downloads.
+download a Vosk model from <https://alphacephei.com/vosk/models> and fetch the
+Orpheus weights with `curl`:
+
+```bash
+curl -L -o orpheus.tar.gz "https://huggingface.co/orpheus-speech/orpheus-3b-styletts2/resolve/main/orpheus.tar.gz"
+mkdir orpheus-3b && tar -xzf orpheus.tar.gz -C orpheus-3b
+```
+
+Set the `ORPHEUS_MODEL` environment variable to the extraction directory if you
+use a custom location. Use `ORPHEUS_REPO` to override the download URL.
 
 The voice used by Orpheus can be customised in the configuration file via the
 `voice` field under the `tts` section.

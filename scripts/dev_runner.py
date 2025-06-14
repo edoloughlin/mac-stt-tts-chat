@@ -75,13 +75,15 @@ def _download_vosk() -> None:
 
 
 def _download_orpheus(dest: Path) -> None:
-    repo = os.environ.get(
+    url = os.environ.get(
         "ORPHEUS_REPO",
-        "https://huggingface.co/orpheus-speech/orpheus-3b-styletts2",
+        "https://huggingface.co/orpheus-speech/orpheus-3b-styletts2/resolve/main/orpheus.tar.gz",
     )
-    console.print(f"[bold]Cloning Orpheus model from {repo}...[/]")
-    subprocess.check_call(["git", "lfs", "install"])
-    subprocess.check_call(["git", "lfs", "clone", repo, str(dest)])
+    console.print(f"[bold]Downloading Orpheus model from {url}...[/]")
+    subprocess.check_call(["curl", "-L", "-o", "orpheus.tar.gz", url])
+    dest.mkdir(exist_ok=True)
+    subprocess.check_call(["tar", "-xzf", "orpheus.tar.gz", "-C", str(dest)])
+    Path("orpheus.tar.gz").unlink()
 
 
 def check_models() -> None:
@@ -95,7 +97,7 @@ def check_models() -> None:
 
     orpheus = Path(os.environ.get("ORPHEUS_MODEL", "orpheus-3b-styletts2"))
     if not orpheus.exists():
-        ans = input("Orpheus model not found. Download now (requires git lfs)? [y/N] ")
+        ans = input("Orpheus model not found. Download now (~1GB)? [y/N] ")
         if ans.lower().startswith("y"):
             _download_orpheus(orpheus)
         else:
