@@ -36,11 +36,13 @@ from typing import List
 
 import contextlib
 
+
 from rich.console import Console
 from rich.layout import Layout
 from rich.live import Live
 from rich.panel import Panel
 from rich.text import Text
+
 TRANSCRIPT_LOG = Path("transcript.log")
 BACKEND_LOG = Path("backend.log")
 FRONTEND_LOG = Path("frontend.log")
@@ -67,19 +69,24 @@ def install_deps(python: Path) -> None:
 
 
 def check_models() -> None:
-    """Ensure STT/TTS model files exist."""
+    """Ensure STT/TTS model files exist, prompting for download if missing."""
     if not Path("vosk-model").exists():
-        console.print(
-            "[red]Vosk model not found. Download one from https://alphacephei.com/vosk/models and extract it as 'vosk-model'.[/]"
-        )
-        sys.exit(1)
+        ans = input("Vosk model not found. Download manually? [y/N] ")
+        if ans.lower().startswith("y"):
+            console.print("Please download a model from https://alphacephei.com/vosk/models")
+            input("Press Enter when ready to continue...")
+        else:
+            sys.exit(1)
     orpheus = os.environ.get("ORPHEUS_MODEL", "orpheus-3b-styletts2")
     if not Path(orpheus).exists():
-        console.print(
-            "[red]Orpheus model not found. Clone https://huggingface.co/orpheus-speech/orpheus-3b-styletts2 with git lfs and set the ORPHEUS_MODEL environment variable.[/]"
-        )
-        sys.exit(1)
-
+        ans = input("Orpheus model not found. Download manually? [y/N] ")
+        if ans.lower().startswith("y"):
+            console.print(
+                "Clone https://huggingface.co/orpheus-speech/orpheus-3b-styletts2 with git lfs"
+            )
+            input("Press Enter when ready to continue...")
+        else:
+            sys.exit(1)
 
 def format_config() -> Text:
     data = {}

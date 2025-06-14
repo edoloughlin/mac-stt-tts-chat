@@ -44,5 +44,3 @@ A list of initial tasks to move the project forward.
 1. Added detailed error messages for invalid or unknown config options.
 1. Implemented a Rich based development runner that installs dependencies and
    launches the backend and frontend together.
-1. Fixed the dev runner so it creates the virtual environment and installs
-   packages before importing Rich.
