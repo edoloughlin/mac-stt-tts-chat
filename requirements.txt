@@ -1,3 +1,4 @@
 vosk>=0.3.45
 websockets>=11.0
+rich>=13.0
 orpheus-speech>=0.1
